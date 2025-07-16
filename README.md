@@ -36,11 +36,6 @@ Select the number of qubits (1–3) and function type.
 Click "Start Algorithm" to step wise execute and continue execution by clicking next step.
 Observe the canvas for amplitude/phase visualizations and read mathematical explanations below.
 
-Project Structure
-
-# index.html: Main structure and content.
-# styles.css: Styling for the UI.
-# script.js: Quantum calculations, visualization, and interactivity.
 
 # Contact
 Connect with me on LinkedIn or open an issue for feedback! : linkedin.com/in/srihari-kulkarni-8aa25a290
