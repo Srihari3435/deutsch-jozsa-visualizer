@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Deutsch-Jozsa Algorithm Explorer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <h1>Interactive Deutsch-Jozsa Algorithm Explorer</h1>
+        <p>Welcome! This project demonstrates the <strong>Deutsch-Jozsa algorithm</strong>, a quantum algorithm that determines whether a function is <em>constant</em> (same output for all inputs) or <em>balanced</em> (outputs 0 for half the inputs and 1 for the other half) with just one query, unlike classical algorithms that may need multiple queries.</p>
+        
+        <h2>How It Works</h2>
+        
+        <h3>The Problem</h3>
+        <p>Given a black-box function f(x) that takes n-bit inputs and outputs either 0 or 1, we want to determine if the function is:</p>
+        <ul>
+            <li><strong>Constant:</strong> f(x) returns the same value (either always 0 or always 1) for all inputs</li>
+            <li><strong>Balanced:</strong> f(x) returns 0 for exactly half of the inputs and 1 for the other half</li>
+        </ul>
+        <p>Classically, you might need to check up to 2^(n-1) + 1 inputs in the worst case. The Deutsch-Jozsa algorithm solves this with just <strong>one query</strong>!</p>
+        
+        <h3>The Quantum Solution</h3>
+        <p>The algorithm leverages three key quantum phenomena:</p>
+        
+        <h4>1. Superposition</h4>
+        <p>Instead of checking inputs one by one, we use Hadamard gates to create a superposition of <em>all possible inputs simultaneously</em>. For n qubits, this creates a state:</p>
+        <div class="math">
+            |ψ⟩ = (1/√2^n) ∑|x⟩ = (1/√2^n)(|00...0⟩ + |00...1⟩ + ... + |11...1⟩)
+        </div>
+        
+        <h4>2. Quantum Parallelism</h4>
+        <p>The oracle function is applied to this superposition, effectively evaluating f(x) for <em>all possible inputs at once</em>. The oracle performs:</p>
+        <div class="math">
+            U_f |x⟩ = (-1)^f(x) |x⟩
+        </div>
+        <p>This adds a phase of -1 to states where f(x) = 1, and leaves states where f(x) = 0 unchanged.</p>
+        
+        <h4>3. Quantum Interference</h4>
+        <p>The second set of Hadamard gates causes quantum interference between the different computational paths. This is where the magic happens:</p>
+        <ul>
+            <li><strong>For constant functions:</strong> All phases are the same (either all +1 or all -1), so after interference, the amplitude of |00...0⟩ is ±1</li>
+            <li><strong>For balanced functions:</strong> Half the phases are +1 and half are -1, so they cancel out perfectly, making the amplitude of |00...0⟩ exactly 0</li>
+        </ul>
+        
+        <h3>Step-by-Step Breakdown</h3>
+        
+        <h4>Step 1: Initialize</h4>
+        <p>Start with n qubits in the |0⟩ state: |ψ₀⟩ = |00...0⟩</p>
+        
+        <h4>Step 2: Create Superposition</h4>
+        <p>Apply Hadamard gates to all qubits:</p>
+        <div class="math">
+            |ψ₁⟩ = H^⊗n |00...0⟩ = (1/√2^n) ∑_{x=0}^{2^n-1} |x⟩
+        </div>
+        <p>Now we have an equal superposition of all possible n-bit strings.</p>
+        
+        <h4>Step 3: Apply Oracle</h4>
+        <p>The oracle applies a phase based on f(x):</p>
+        <div class="math">
+            |ψ₂⟩ = (1/√2^n) ∑_{x=0}^{2^n-1} (-1)^f(x) |x⟩
+        </div>
+        <p>This doesn't change the probability of measuring any particular state, but it encodes the function's behavior in the quantum phases.</p>
+        
+        <h4>Step 4: Interference</h4>
+        <p>Apply Hadamard gates again to create interference:</p>
+        <div class="math">
+            |ψ₃⟩ = (1/2^n) ∑_{y=0}^{2^n-1} ∑_{x=0}^{2^n-1} (-1)^f(x) (-1)^{x·y} |y⟩
+        </div>
+        <p>The amplitude of |00...0⟩ becomes:</p>
+        <div class="math">
+            Amplitude = (1/2^n) ∑_{x=0}^{2^n-1} (-1)^f(x)
+        </div>
+        
+        <h4>Step 5: Measurement</h4>
+        <p>Measure all qubits:</p>
+        <ul>
+            <li><strong>If result is |00...0⟩:</strong> Function is constant</li>
+            <li><strong>If result is anything else:</strong> Function is balanced</li>
+        </ul>
+        
+        <h3>Why This Works</h3>
+        <p>The key insight is in the amplitude calculation:</p>
+        <ul>
+            <li><strong>Constant f(x) = 0:</strong> All terms are +1, so amplitude = 2^n/2^n = 1</li>
+            <li><strong>Constant f(x) = 1:</strong> All terms are -1, so amplitude = -2^n/2^n = -1</li>
+            <li><strong>Balanced f(x):</strong> Half terms are +1, half are -1, so amplitude = 0/2^n = 0</li>
+        </ul>
+        
+        <h3>Quantum Advantage</h3>
+        <p>This algorithm demonstrates quantum computing's power through:</p>
+        <ul>
+            <li><strong>Exponential speedup:</strong> One query vs. up to 2^(n-1) + 1 classical queries</li>
+            <li><strong>Quantum parallelism:</strong> Evaluating all inputs simultaneously</li>
+            <li><strong>Constructive/destructive interference:</strong> Using quantum phases to distinguish cases</li>
+        </ul>
+        
+        <p>You can interact with the visualization below by choosing the number of qubits and function type, then watch the quantum states evolve step-by-step to see these principles in action!</p>
+        
+        <h3>Controls</h3>
+        <div>
+            <label for="qubits">Number of Qubits (1-3):</label>
+            <select id="qubits">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+            <label for="functionType">Function Type:</label>
+            <select id="functionType">
+                <option value="constant0">Constant (f(x) = 0)</option>
+                <option value="constant1">Constant (f(x) = 1)</option>
+                <option value="balanced">Balanced</option>
+            </select>
+            <button id="nextStepBtn" onclick="nextStep()">Start Algorithm</button>
+            <button onclick="reset()">Reset</button>
+            
+        </div>
+        
+        <div id="stepInfo" style="background: #e8f4f8; padding: 15px; margin: 10px 0; border-radius: 5px;">
+            <h4>Current Step: <span id="currentStep">Ready to Start</span></h4>
+            <p id="stepDescription">Click 'Start Algorithm' to begin the Deutsch-Jozsa algorithm demonstration.</p>
+        </div>
+        
+        <h3>Visualization</h3>
+        <div id="canvas"></div>
+        
+        <h3>Step-by-Step Explanation</h3>
+        <div id="explanation"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
